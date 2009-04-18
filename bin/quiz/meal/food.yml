@@ -1,0 +1,21 @@
+---
+雙層芝士孖堡:  &1 !quiz.meal.model.Food
+  name: 雙層芝士孖堡
+  price: 12.5
+至尊漢堡: &2 !quiz.meal.model.Food
+  name: 至尊漢堡
+  price: 16.8
+中薯條: &3 !quiz.meal.model.Food
+  name: 中薯條
+  price: 8.8
+中可樂: &4 !quiz.meal.model.Food
+  name: 中可樂
+  price: 8.5
+雙層芝士孖堡套餐: !quiz.meal.model.Meal
+  name: 雙層芝士孖堡套餐
+  price: 23.8
+  food: [*1, *3, *4]
+至尊漢堡套餐: !quiz.meal.model.Meal
+  name: 至尊漢堡套餐
+  price: 26.6
+  food: [*2, *3, *4]

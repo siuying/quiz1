@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="JavaQuiz1">
+	<property environment="env" />
+	<property name="junit.output.dir" value="tests" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+
+	<path id="JavaQuiz1.classpath">
+		<pathelement location="bin" />
+		<pathelement location="lib/junit.jar" />
+		<pathelement location="lib/jyaml-1.3.jar" />
+	</path>
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<mkdir dir="${junit.output.dir}" />
+
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src" excludes="**/*.launch, **/*.java" />
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="junit.output.dir" />
+	</target>
+
+	<target depends="clean" name="cleanall" />
+
+	<target depends="init" name="build">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" encoding="UTF-8">
+			<src path="src" />
+			<classpath refid="JavaQuiz1.classpath" />
+		</javac>
+	</target>
+
+	<target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+		<antcall target="build" />
+	</target>
+
+	<target name="test" depends="build">
+		<mkdir dir="${junit.output.dir}" />
+		<junit printsummary="yes" haltonfailure="yes">
+		  <classpath>
+		    <pathelement location="bin"/>
+		  </classpath>
+		  <classpath refid="JavaQuiz1.classpath" />
+		  <formatter type="xml"/>
+
+		  <batchtest haltonerror="false" haltonfailure="false" fork="yes" todir="${junit.output.dir}">
+		    <fileset dir="src">
+		      <include name="**/*Test*.java"/>
+		      <exclude name="**/Abstract*.java"/>
+		    </fileset>
+		  </batchtest>
+		</junit>
+
+		<junitreport todir="${junit.output.dir}">
+			<fileset dir="${junit.output.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${junit.output.dir}" />
+		</junitreport>
+	</target>
+</project>
