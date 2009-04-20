@@ -19,3 +19,7 @@
   name: 至尊漢堡套餐
   price: 26.6
   food: [*2, *3, *4]
+# 雙層芝士孖堡套餐2: !quiz.meal.model.Meal
+#  name: 雙層芝士孖堡套餐2
+#  price: 25.8
+#  food: [*1, *3, *4]

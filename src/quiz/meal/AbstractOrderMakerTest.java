@@ -32,22 +32,22 @@ public abstract class AbstractOrderMakerTest {
 
     @Test
     public void testSimpleOrder() {
-        List<Item> wantedItems = simpleMenu.getItems("至尊漢堡");        
-        List<Item> expectedItems = simpleMenu.getItems("至尊漢堡");
+        List<Item> wantedItems = getSimpleMenu().getItems("至尊漢堡");        
+        List<Item> expectedItems = getSimpleMenu().getItems("至尊漢堡");
         baseOrderTest(wantedItems, expectedItems);
     }
     
     @Test
     public void testOrderWithMeal() {
-        List<Item> wantedItems = simpleMenu.getItems("雙層芝士孖堡", "中薯條", "中可樂");
-        List<Item> expectedItems = simpleMenu.getItems("雙層芝士孖堡套餐");
+        List<Item> wantedItems = getSimpleMenu().getItems("雙層芝士孖堡", "中薯條", "中可樂");
+        List<Item> expectedItems = getSimpleMenu().getItems("雙層芝士孖堡套餐");
         baseOrderTest(wantedItems, expectedItems);
     }
     
     @Test
     public void testChooseCheapMeal() {
-        List<Item> wantedItems = simpleMenu.getItems("雙層芝士孖堡", "至尊漢堡", "中薯條", "中可樂");
-        List<Item> expectedItems = simpleMenu.getItems("雙層芝士孖堡", "至尊漢堡套餐");
+        List<Item> wantedItems = getSimpleMenu().getItems("雙層芝士孖堡", "至尊漢堡", "中薯條", "中可樂");
+        List<Item> expectedItems = getSimpleMenu().getItems("雙層芝士孖堡", "至尊漢堡套餐");
         baseOrderTest(wantedItems, expectedItems);
     }
     
@@ -56,8 +56,8 @@ public abstract class AbstractOrderMakerTest {
     public void testOrders() {
         List<List<List<String>>> list = (List<List<List<String>>>) Yaml.load(OrderMaker.class.getResourceAsStream("testcase.yml"));
         for(List<List<String>> testLists : list) {
-            List<Item> wantedItems = simpleMenu.getItems(testLists.get(0).toArray(new String[0]));
-            List<Item> expectedItems = simpleMenu.getItems(testLists.get(1).toArray(new String[0]));
+            List<Item> wantedItems = getSimpleMenu().getItems(testLists.get(0).toArray(new String[0]));
+            List<Item> expectedItems = getSimpleMenu().getItems(testLists.get(1).toArray(new String[0]));
             baseOrderTest(wantedItems, expectedItems);
         }        
     }
@@ -67,7 +67,7 @@ public abstract class AbstractOrderMakerTest {
         List<Item> orderItems = maker.order(wantedItems.toArray(new Item[0]));
         
         assertTrue("missing wanted items in " + wantedItems, validateOrder(expectedItems, orderItems));
-        assertEquals("not minimum price for " + wantedItems, simpleMenu.getOrderPrice(expectedItems), simpleMenu.getOrderPrice(orderItems), 0.01);
+        assertEquals("not minimum price for " + wantedItems, getSimpleMenu().getOrderPrice(expectedItems), getSimpleMenu().getOrderPrice(orderItems), 0.01);
     }
     
     private boolean validateOrder(List<Item> wantedItems, List<Item> orderItems) {
@@ -121,5 +121,10 @@ public abstract class AbstractOrderMakerTest {
      * @return
      */
     public abstract OrderMaker getOrderMaker();
+
+
+	public Menu getSimpleMenu() {
+		return simpleMenu;
+	}
 
 }
