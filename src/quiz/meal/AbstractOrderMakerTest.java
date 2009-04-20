@@ -60,8 +60,10 @@ public abstract class AbstractOrderMakerTest {
     }
     
     private void baseOrderTest(List<Item> wantedItems, List<Item> expectedItems) {
-        log.info("testing " + wantedItems +", expects " + expectedItems);
+        log.info("testing " + wantedItems);
         List<Item> orderItems = maker.order(wantedItems.toArray(new Item[0]));
+        log.info("   expects: " + expectedItems);
+        log.info("   result:  " + orderItems);
         
         assertTrue("missing wanted items in " + wantedItems, validateOrder(expectedItems, orderItems));
         assertEquals("not minimum price for " + wantedItems, simpleMenu.getOrderPrice(expectedItems), simpleMenu.getOrderPrice(orderItems), 0.01);

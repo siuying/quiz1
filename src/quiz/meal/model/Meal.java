@@ -48,7 +48,7 @@ public class Meal implements Item {
     }
     
     public String toString() {
-        return String.format("Meal(%s,%.2f,%s)", name, price, food.toString());
+        return String.format("Meal(%s,%.2f)", name, price);
     }
     
     /* (non-Javadoc)
