@@ -4,8 +4,6 @@ package quiz.meal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -16,7 +14,6 @@ import org.junit.Test;
 
 import quiz.meal.model.Food;
 import quiz.meal.model.Item;
-import quiz.meal.model.Meal;
 import quiz.meal.simple.NaiveOrderMakerTest;
 
 public abstract class AbstractOrderMakerTest {
@@ -71,49 +68,22 @@ public abstract class AbstractOrderMakerTest {
     }
     
     private boolean validateOrder(List<Item> wantedItems, List<Item> orderItems) {
-        wantedItems = getItemAsFoodList(wantedItems);
-        orderItems = getItemAsFoodList(orderItems);
+        List<Food> wantedItemsAsFood = OrderHelper.getItemAsFoodList(wantedItems);
+        List<Food> orderItemsAsFood = OrderHelper.getItemAsFoodList(wantedItems);
         
-        Map<Item, Integer> wantedItemsCount = getItemCount(wantedItems);
-        Map<Item, Integer> orderItemsCount = getItemCount(orderItems);
+        Map<Item, Integer> wantedItemsCount = OrderHelper.getItemCount(wantedItemsAsFood);
+        Map<Item, Integer> orderItemsCount = OrderHelper.getItemCount(orderItemsAsFood);
         
         for(Item key : wantedItemsCount.keySet()) {
             if (orderItemsCount.get(key) == null ||
                     orderItemsCount.get(key) < wantedItemsCount.get(key)) {
 
-                log.warning("missing " + key.getName() + " frolm order");
+                log.warning("missing " + key.getName() + " from order");
                 return false;                
             }
         }
         
         return true;
-    }
-
-    private List<Item> getItemAsFoodList(List<? extends Item> items) {
-        List<Item> itemList = new ArrayList<Item>();
-        for(Item i : items) {
-            if (i instanceof Food) {
-                itemList.add(i);
-            } else if (i instanceof Meal) {
-                List<Food> mealFood = ((Meal) i).getFood();
-                itemList.addAll(getItemAsFoodList(mealFood));
-            } else {
-                throw new AssertionError("Unexpected type");
-            }
-        }
-        return itemList;
-    }
-    
-    private Map<Item, Integer> getItemCount(List<Item> items) {
-        Map<Item, Integer> itemCount = new HashMap<Item, Integer>();
-        for(Item i : items) {
-            if (!itemCount.containsKey(i)) {
-                itemCount.put(i, 1);
-            } else {
-                itemCount.put(i, itemCount.get(i) + 1);
-            }
-        }
-        return itemCount;
     }
     
     /**
