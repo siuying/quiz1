@@ -5,17 +5,71 @@
 至尊漢堡: &2 !quiz.meal.model.Food
   name: 至尊漢堡
   price: 16.8
-中薯條: &3 !quiz.meal.model.Food
+麥樂雞 (6件): &3 !quiz.meal.model.Food
+  name: 麥樂雞 (6件)
+  price: 12.8
+麥樂雞 (9件): &4 !quiz.meal.model.Food
+  name: 麥樂雞 (9件)
+  price: 16.8
+脆香雞翼 (4件): &5 !quiz.meal.model.Food
+  name: 脆香雞翼 (4件)
+  price: 14.0
+脆香雞翼 (2件): &6 !quiz.meal.model.Food
+  name: 脆香雞翼 (2件)
+  price: 7.0
+脆辣雞腿飽: &7 !quiz.meal.model.Food
+  name: 脆辣雞腿飽
+  price: 14.5
+板燒雞腿飽: &8 !quiz.meal.model.Food
+  name: 板燒雞腿飽
+  price: 15.0
+魚柳飽: &9 !quiz.meal.model.Food
+  name: 魚柳飽
+  price: 13.3
+巨無霸: &10 !quiz.meal.model.Food
+  name: 巨無霸
+  price: 25.3
+
+中薯條: &o1 !quiz.meal.model.Food
   name: 中薯條
   price: 8.8
-中可樂: &4 !quiz.meal.model.Food
+中可樂: &d1 !quiz.meal.model.Food
   name: 中可樂
   price: 8.5
+
 雙層芝士孖堡套餐: !quiz.meal.model.Meal
   name: 雙層芝士孖堡套餐
   price: 23.8
-  food: [*1, *3, *4]
+  food: [*1, *o1, *d1]
 至尊漢堡套餐: !quiz.meal.model.Meal
   name: 至尊漢堡套餐
   price: 26.6
-  food: [*2, *3, *4]
+  food: [*2, *o1, *d1]
+麥樂雞 (6件) 套餐: !quiz.meal.model.Meal
+  name: 麥樂雞 (6件) 套餐
+  price: 24.8
+  food: [*3, *o1, *d1]
+麥樂雞 (9件) 套餐: !quiz.meal.model.Meal
+  name: 麥樂雞 (9件) 套餐
+  price: 27.8
+  food: [*4, *o1, *d1]
+脆香雞翼套餐: !quiz.meal.model.Meal
+  name: 脆香雞翼套餐
+  price: 24.8
+  food: [*5, *o1, *d1]
+脆辣雞腿飽套餐: !quiz.meal.model.Meal
+  name: 脆辣雞腿飽套餐
+  price: 25.5
+  food: [*7, *o1, *d1]
+板燒雞腿飽套餐: !quiz.meal.model.Meal
+  name: 板燒雞腿飽套餐
+  price: 26.3
+  food: [*8, *o1, *d1]
+魚柳飽套餐: !quiz.meal.model.Meal
+  name: 魚柳飽套餐
+  price: 23.8
+  food: [*9, *o1, *d1]
+巨無霸套餐: !quiz.meal.model.Meal
+  name: 巨無霸套餐
+  price: 25.3
+  food: [*10, *o1, *d1]
