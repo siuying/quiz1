@@ -28,8 +28,11 @@
   price: 13.3
 巨無霸: &10 !quiz.meal.model.Food
   name: 巨無霸
-  price: 25.3
-
+  price: 14.8
+豬柳蛋漢堡: &11 !quiz.meal.model.Food
+  name: 豬柳蛋漢堡
+  price: 12.2
+  
 中薯條: &o1 !quiz.meal.model.Food
   name: 中薯條
   price: 8.8
@@ -73,3 +76,7 @@
   name: 巨無霸套餐
   price: 25.3
   food: [*10, *o1, *d1]
+豬柳蛋漢堡套餐: &11 !quiz.meal.model.Meal
+  name: 豬柳蛋漢堡套餐
+  price: 23.5
+  food: [*11, *o1, *d1]
