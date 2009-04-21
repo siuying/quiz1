@@ -13,9 +13,12 @@ import quiz.meal.OrderMaker;
 import quiz.meal.model.Item;
 import quiz.meal.model.Meal;
 
+/**
+ * 
+ * @author Jacky See
+ *
+ */
 public class PlainOrderMakerTest extends AbstractOrderMakerTest {
-	
-	
 	
 	@Test
 	public void testMatchMeal() throws Exception {
