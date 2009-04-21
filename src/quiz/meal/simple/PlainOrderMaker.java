@@ -9,6 +9,11 @@ import quiz.meal.SimpleMenu;
 import quiz.meal.model.Item;
 import quiz.meal.model.Meal;
 
+/**
+ * 
+ * @author Jacky See
+ * Making orders arranged by worthies meal
+ */
 public class PlainOrderMaker implements OrderMaker {
 	
 	private static SimpleMenu menu = new SimpleMenu();
@@ -23,7 +28,7 @@ public class PlainOrderMaker implements OrderMaker {
 		Meal meal = getWorthiestMeal(remainingFoods);
 		while(meal != null){
 			resultItems.add(meal);
-			subtractMealFoodFromList(meal, remainingFoods);
+			subtractMealFoodFromItemList(meal, remainingFoods);
 			meal = getWorthiestMeal(remainingFoods);
 		}
 		
@@ -48,7 +53,7 @@ public class PlainOrderMaker implements OrderMaker {
 		return worthiestMeal;
 	}
 	
-	public void subtractMealFoodFromList(Meal meal, List<Item> items){
+	public void subtractMealFoodFromItemList(Meal meal, List<Item> items){
 		for (Item item : meal.getFood()) {
 			items.remove(item);
 		}
