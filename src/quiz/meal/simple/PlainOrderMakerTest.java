@@ -16,7 +16,7 @@ import quiz.meal.model.Meal;
 /**
  * 
  * @author Jacky See
- *
+ * Test case for Plain Order Maker
  */
 public class PlainOrderMakerTest extends AbstractOrderMakerTest {
 	
