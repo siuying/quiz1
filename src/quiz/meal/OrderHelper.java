@@ -16,7 +16,7 @@ public class OrderHelper {
      * If input Items contains Food, add the food to return list. If input items
      * contains Meal, return the Food inside the meal in the return list.
      * 
-     * @param List of order item, could be Food or Msal
+     * @param List of order item, could be Food or Meal
      * @return the actual food represented by the input order items.
      */
     public static List<Food> getItemAsFoodList(List<? extends Item> items) {
