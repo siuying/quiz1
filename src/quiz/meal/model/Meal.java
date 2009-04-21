@@ -1,6 +1,5 @@
 package quiz.meal.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -82,44 +81,5 @@ public class Meal implements Item {
             return false;
         return true;
     }
-    
-    
-    /**
-     * Check if this meal contains the listed items
-     * @param items
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public boolean matchItems(List<Item> items){
-    	List<Item> itemList = (List<Item>) new ArrayList<Item>(items).clone();
-    	boolean match = true;
-    	for (Food f : food) {
-			if(!itemList.contains(f)){
-				match = false;
-				break;
-			}
-			else{
-				itemList.remove(f);
-			}
-		}
-    	
-    	return match;
-    }
-    
-    /**
-     * Get individual prices
-     * @return
-     */
-    private double getIndividualFoodsPrice(){
-    	double total = 0;
-    	for (Food f : this.food) {
-			total += f.getPrice();
-		}
-    	return total;
-    }
-    
-    public double getMoneySaved(){
-    	return getIndividualFoodsPrice() - this.price; 
-    }
-    
+ 
 }
