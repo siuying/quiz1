@@ -2,6 +2,8 @@ package quiz.meal.plain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import quiz.meal.OrderMaker;
@@ -17,6 +19,11 @@ import quiz.meal.model.Meal;
 public class PlainOrderMaker implements OrderMaker {
 	
 	private static SimpleMenu menu = new SimpleMenu();
+	private List<Meal> meals;
+	
+	public PlainOrderMaker() {
+		meals = getMenusSortedByMoneySaved();
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -42,18 +49,12 @@ public class PlainOrderMaker implements OrderMaker {
 	 * @return
 	 */
 	public Meal getWorthiestMeal(List<Item> wantedItems){
-		Meal worthiestMeal = null;
-		for (Item item : menu.getAllItems().values()) {
-			if(item instanceof Meal){
-				Meal currentMeal = (Meal) item;
-				if(matchMealItems(wantedItems, currentMeal)){
-					if(getMoneySaved(currentMeal) > getMoneySaved(worthiestMeal)){
-						worthiestMeal = currentMeal;
-					}
-				}
+		for(Meal meal: meals){
+			if(matchMealItems(wantedItems, meal)){
+				return meal;
 			}
 		}
-		return worthiestMeal;
+		return null;
 	}
 	
 	/**
@@ -96,14 +97,35 @@ public class PlainOrderMaker implements OrderMaker {
     	boolean match = true;
     	for (Food f : meal.getFood()) {
 			if(!itemList.contains(f)){
-				match = false;
-				break;
+				return false;
 			}
 			else{
 				itemList.remove(f);
 			}
 		}
     	return match;
+	}
+	
+	
+	/**
+	 * Get Meals sorted by money saved
+	 * @return
+	 */
+	public List<Meal> getMenusSortedByMoneySaved(){
+		List<Meal> meals = new ArrayList<Meal>();
+		for(Item item : menu.getAllItems().values()){
+			if(item instanceof Meal){
+				meals.add((Meal)item);
+			}
+		}
+		Collections.sort(meals, new Comparator<Meal>(){
+			@Override
+			public int compare(Meal m1, Meal m2) {
+				double result = getMoneySaved(m2) - getMoneySaved(m1);
+				return (result > 0)? 1: (result == 0)? 0: -1;
+			}
+		});
+		return meals;
 	}
 	
 }
