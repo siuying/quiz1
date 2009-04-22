@@ -6,10 +6,9 @@ import static choco.Choco.scalar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import quiz.meal.Menu;
@@ -18,16 +17,23 @@ import quiz.meal.OrderMaker;
 import quiz.meal.model.Food;
 import quiz.meal.model.Item;
 import quiz.meal.model.Meal;
+import quiz.meal.simple.NaiveOrderMaker;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
-public class CSPOrderMaker implements OrderMaker {
+/**
+ * Create a CSP/Integer Linear Programming based order maker.
+ * 
+ * @author siuying
+ * @see http://www.reality.hk/articles/2009/04/22/960/
+ *
+ */
+public class CSPOrderMaker extends NaiveOrderMaker implements OrderMaker {
     private Logger log = Logger.getLogger(CSPOrderMaker.class.getName());
     private Item[] items;
     private Menu menu;
@@ -44,56 +50,61 @@ public class CSPOrderMaker implements OrderMaker {
      * Find best value order, using CSP
      */
     @Override
-    public List<Item> order(Item... wantedItems) {
-        int maxOrder = wantedItems.length;
+    public List<Item> order(Item... wantedItems) {        
         Model model = new CPModel();
-        
-        // optimization: remove any unrelated item from our "all item list"
-        items = getRelatedItems(this.menu.getAllItems().values(), wantedItems);
-        
+        int maxOrder = wantedItems.length;
         List<Food> wantedLists = OrderHelper.getItemAsFoodList(Arrays.asList(wantedItems));
-        Map<Item, Integer> itemCount = OrderHelper.getItemCount(wantedLists);
+
+        // optimization: remove any unrelated item from our "all item list"
+        items = getRelatedItems(this.menu.getAllItems(), wantedItems);
         
-        // create variables for items to be ordered and items wanted
-        List<IntegerVariable> wantedItemCountVar = new ArrayList<IntegerVariable>();
+        // create variables for items to be ordered
         List<IntegerVariable> orderItemCountVar = new ArrayList<IntegerVariable>();
         for(int i=0; i<items.length; i++) {
-            Item item = items[i];
-            IntegerVariable order = makeIntVar(item.getName(), 0, maxOrder);
+            IntegerVariable order = makeIntVar(items[i].getName(), 0, maxOrder);
             orderItemCountVar.add(order);
             model.addVariable(order);
-            
-            int wantedItemCount = (itemCount.containsKey(item)) ? itemCount.get(item) : 0; 
-            wantedItemCountVar.add(makeIntVar(item.getName(), wantedItemCount, maxOrder));
         }
-        
+
         // Constraints: number of returned food = orderItemCount[food] + orderItemCount[meal] which meal contains food
-        addFoodConstraint(model, orderItemCountVar, wantedItemCountVar);
+        addFoodConstraint(model, wantedLists, orderItemCountVar);
         
         // Constraint: total price = sum of price * orderItemCount
         IntegerVariable totalPrice = makeIntVar("totalPrice", 0, maxOrder * MAX_ORDER_ITEM_PRICE * 10);
         model.addConstraint(eq(scalar(getPriceList(), orderItemCountVar.toArray(new IntegerVariable[0])), 
                 totalPrice));
 
-        Solver s = new CPSolver();
-        s.read(model);
-        
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(orderItemCountVar.toArray(new IntegerVariable[0]))));
-        s.setValIntIterator(new IncreasingDomain());
-        s.minimize(s.getVar(totalPrice), false);
-        s.setTimeLimit(TIME_LIMIT);
-        s.solve();
-        s.printRuntimeSatistics();
-
-        return getOrderBySolution(s, orderItemCountVar);
+        // Build a solver and solve the problem, based on minimized total price
+        Solver s = buildSolverByMinimizeTotalPrice(model, totalPrice);
+        if (s.solve()) {
+            return getOrderBySolution(s, orderItemCountVar);
+        } else {
+            log.warning("no solution or cannot attained the solution with timeout limit");
+            return super.order(wantedItems);
+        }
     }
     
     /**
-     * Based on CSP solution, create order
-     * 
-     * @param solver
-     * @param orderItemCount
+     * Build a CSP solver
+     * @param model
+     * @param totalPrice
      * @return
+     */
+    private Solver buildSolverByMinimizeTotalPrice(Model model, IntegerVariable totalPrice) {
+        Solver s = new CPSolver();
+        s.read(model);
+        s.setValIntIterator(new IncreasingDomain());
+        s.minimize(s.getVar(totalPrice), false);
+        s.setTimeLimit(TIME_LIMIT);
+        return s;
+    }
+    
+    /**
+     * Based on CSP solution, create list of order item
+     * 
+     * @param solver CSP solver
+     * @param orderItemCount variables for item
+     * @return list of order item
      */
     private List<Item> getOrderBySolution(Solver solver, List<IntegerVariable> orderItemCount) {
         List<Item> orderItems = new ArrayList<Item>();
@@ -110,72 +121,94 @@ public class CSPOrderMaker implements OrderMaker {
     }
     
     /**
-     * return price of items on menu
+     * Array of price of order item. Price is double, but as the solver do not
+     * support floating point number , we will convert the price to integer
+     * value (per 10 cents)
      * 
-     * @return
+     * @return price of order items
      */
     private int[] getPriceList() {
         int[] priceList = new int[items.length];
-        for(int i=0; i<items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             priceList[i] = (int) (items[i].getPrice() * 10);
         }
         return priceList;
     }
     
     /**
-     * Add Food Number Constraint. Ordered food must be equal to or greater than wanted food.
-     * @param model
-     * @param orderItemCount
-     * @param wantedItemCount
+     * Add Food Number Constraint. Number of ordered food must be equal to or greater than that of wanted food
+     * 
+     * @param model the CSP Model
+     * @param wantedLists list of wanted food    
+     * @param orderItemCount Model variables representing the resulting item order
      */
-    private void addFoodConstraint(Model model, List<IntegerVariable> orderItemCount, List<IntegerVariable> wantedItemCount) {
+    private void addFoodConstraint(Model model, List<Food> wantedLists, List<IntegerVariable> orderItemCount) {
+        int maxOrder = wantedLists.size();
+        Map<Item, Integer> itemCount = OrderHelper.getItemCount(wantedLists);
+        List<IntegerVariable> wantedItemCountVar = new ArrayList<IntegerVariable>();
+        for(int i=0; i<items.length; i++) {            
+            Item item = items[i];            
+            if (itemCount.containsKey(item)) {
+                wantedItemCountVar.add(makeIntVar(item.getName(), itemCount.get(item), maxOrder));
+            } else {
+                wantedItemCountVar.add(makeIntVar(item.getName(), 0, maxOrder));
+            }
+        }
+        
         int[][] foodMealMatrix = new int[items.length][items.length];
         for(int i=0; i<items.length; i++) {
             Item item = items[i];
             if (item instanceof Food) {
                 foodMealMatrix[i][i] = 1;
+
             } else if (item instanceof Meal) {
                 Meal meal = (Meal) item;
                 for(int j=0; j<items.length; j++) {
-                    if (meal.getFood().contains(items[j])) {
-                        foodMealMatrix[i][j]++;
+                    List<Food> mealFood = meal.getFood();
+                    for(int k=0; k<mealFood.size(); k++) {
+                        if ( mealFood.get(k).equals((items[j])) ) {
+                            foodMealMatrix[j][i]++;
+                        }
                     }
+
                 }
+
             }
         }
         
+        IntegerVariable[] orderItemCountArr = orderItemCount.toArray(new IntegerVariable[0]);
         for(int i=0; i<items.length; i++) {
-            int[] itemThatProduceFood = new int[items.length];
-            for(int j=0; j<items.length; j++) {
-                itemThatProduceFood[j] = foodMealMatrix[j][i];
-            }
-            
-            if (log.isLoggable(Level.FINER)) {
-                log.fine("order " + items[i].getName() + " = " + Arrays.toString(itemThatProduceFood));
-            }
-            model.addConstraint(Choco.geq(scalar(itemThatProduceFood, orderItemCount.toArray(new IntegerVariable[0])), 
-                    wantedItemCount.get(i)));
+            model.addConstraint(Choco.geq(scalar(foodMealMatrix[i], orderItemCountArr), 
+                    wantedItemCountVar.get(i)));
         }
     }
     
-
-    @SuppressWarnings("unchecked")
-    private Item[] getRelatedItems(Collection<Item> allItems, Item[] wantedItems) {
-        ArrayList<Item> tmpItemList = new ArrayList<Item>(this.menu.getAllItems().values());
-        ArrayList<Item> itemList = (ArrayList<Item>) tmpItemList.clone();
-        for(Item i : tmpItemList) {
+    /**
+     * Filter out items that are not related to the wanted food. "Related to" means the item is a wanted food, 
+     * or a meal containing wanted food. 
+     * 
+     * @param allItems all items
+     * @param wantedFood food wanted
+     * @return array of items that are only related to the wanted order
+     */
+    private Item[] getRelatedItems(Map<String, Item> allItems, Item[] wantedFood) {
+        ArrayList<Item> itemList = new ArrayList<Item>(allItems.values());        
+        Iterator<Item> iter = itemList.iterator();
+        while(iter.hasNext()) {
+            Item item = iter.next();
             boolean isWanted = false;
-            for(Item wanted : wantedItems) {
-                if (i.equals(wanted) || (i instanceof Meal && ((Meal)i).getFood().contains(wanted))) {
+            for(Item wanted : wantedFood) {
+                if (item.equals(wanted) || (item instanceof Meal && ((Meal)item).getFood().contains(wanted))) {
                     // retain
                     isWanted = true;
                     break;
                 }
             }
             if (!isWanted) {
-                itemList.remove(i);
+                iter.remove();
             }
         }
+        
         return itemList.toArray(new Item[itemList.size()]);
     }
 }
