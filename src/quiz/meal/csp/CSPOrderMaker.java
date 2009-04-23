@@ -42,6 +42,9 @@ public class CSPOrderMaker extends NaiveOrderMaker implements OrderMaker {
     private static int MAX_ORDER_ITEM_PRICE = 50;
     private static int TIME_LIMIT = 60000;
     
+    public CSPOrderMaker() {
+    }
+    
     public CSPOrderMaker(Menu menu) {
         this.menu = menu;
     }
@@ -196,7 +199,7 @@ public class CSPOrderMaker extends NaiveOrderMaker implements OrderMaker {
         Iterator<Item> iter = itemList.iterator();
         while(iter.hasNext()) {
             Item item = iter.next();
-            boolean isWanted = false;
+            boolean isWanted = false;            
             for(Item wanted : wantedFood) {
                 if (item.equals(wanted) || (item instanceof Meal && ((Meal)item).getFood().contains(wanted))) {
                     // retain
@@ -210,5 +213,12 @@ public class CSPOrderMaker extends NaiveOrderMaker implements OrderMaker {
         }
         
         return itemList.toArray(new Item[itemList.size()]);
+    }
+
+    /**
+     * @param menu the menu to set
+     */
+    public void setMenu(Menu menu) {
+        this.menu = menu;
     }
 }
