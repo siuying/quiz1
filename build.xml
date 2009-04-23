@@ -14,12 +14,13 @@
 	<path id="JavaQuiz1.classpath">
 		<pathelement location="bin" />
 		<fileset dir="lib" casesensitive="yes">
-		  <include name="**/*.jar"/>
+			<include name="**/*.jar"/>
 		</fileset>
 
 	</path>
 
 	<target name="init">
+		<mkdir dir="dest" />
 		<mkdir dir="bin" />
 		<mkdir dir="${junit.output.dir}" />
 
@@ -51,18 +52,18 @@
 	<target name="test" depends="build">
 		<mkdir dir="${junit.output.dir}" />
 		<junit printsummary="yes" haltonfailure="yes">
-		  <classpath>
-		    <pathelement location="bin"/>
-		  </classpath>
-		  <classpath refid="JavaQuiz1.classpath" />
-		  <formatter type="xml"/>
+			<classpath>
+				<pathelement location="bin"/>
+			</classpath>
+			<classpath refid="JavaQuiz1.classpath" />
+			<formatter type="xml"/>
 
-		  <batchtest haltonerror="false" haltonfailure="false" fork="yes" todir="${junit.output.dir}">
-		    <fileset dir="src">
-		      <include name="**/*Test*.java"/>
-		      <exclude name="**/Abstract*.java"/>
-		    </fileset>
-		  </batchtest>
+			<batchtest haltonerror="false" haltonfailure="false" fork="yes" todir="${junit.output.dir}">
+				<fileset dir="src">
+					<include name="**/*Test*.java"/>
+					<exclude name="**/Abstract*.java"/>
+				</fileset>
+			</batchtest>
 		</junit>
 
 		<junitreport todir="${junit.output.dir}">
@@ -71,5 +72,11 @@
 			</fileset>
 			<report format="frames" todir="${junit.output.dir}" />
 		</junitreport>
+	</target>
+
+	<target name="jar" depends="init,build">
+		<jar destfile="dest/quiz1.jar" basedir="bin">
+			<fileset dir="bin" excludes="**/*Test*.class" />
+		</jar>
 	</target>
 </project>
