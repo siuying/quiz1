@@ -55,16 +55,14 @@ public class CSOrderMaker implements OrderMaker {
         }
         int maxPrice = ((int) maxPrice(wantedFood) * 10);
         CspIntVariable priceVar = varFactory.intVar("price", 0, maxPrice);
+        CspIntExpr priceExpr = priceVar;
 
         try {
-            CspIntExpr priceExpr = priceVar;
             for (int i = 0; i < items.length; i++) {
                 Item item = items[i];
                 CspIntVariable oX = orderVar.get(i);
                 if (item instanceof Food) {
                     CspIntExpr sum = oX;
-                    int itemCount = foodCount.containsKey(item) ? foodCount.get(item) : 0;
-                    
                     for (int j = 0; j < items.length; j++) {
                         if (items[j] instanceof Meal) {
                             Meal m = (Meal) items[j];
@@ -75,6 +73,7 @@ public class CSOrderMaker implements OrderMaker {
                     }
                     
                     // ordered_food(X) + SUM(ordered_meal_with_food(X)) >= wanted_food(x)
+                    int itemCount = foodCount.containsKey(item) ? foodCount.get(item) : 0;
                     CspConstraint foodConstraint = sum.geq(itemCount);
                     solver.addConstraint(foodConstraint);
                 }
@@ -84,19 +83,20 @@ public class CSOrderMaker implements OrderMaker {
             }
             log.debug("price = " + priceExpr.toString());
             
-            SearchTechniques tech = solver.getSearchTechniques();
-            SearchGoals goals = solver.getSearchGoals();
-            SearchGoal minimizePriceGoal = goals.minimize(priceExpr);
-
-            SearchActions actions = solver.getSearchActions();
-            SearchAction action = actions.generate(orderVar.toArray(new CspIntVariable[0]));            
-            solver.solve(action, minimizePriceGoal, tech.dfs());
-            
-            log.info(" result order = " + orderVar);
+            solver.propagate();
         } catch (PropagationFailureException e) {
             log.error("error propagate constraint", e);
         }
         
+        SearchTechniques tech = solver.getSearchTechniques();
+        SearchGoals goals = solver.getSearchGoals();
+        SearchGoal minimizePriceGoal = goals.minimize(priceExpr);
+
+        SearchActions actions = solver.getSearchActions();
+        SearchAction action = actions.generate(orderVar.toArray(new CspIntVariable[0]));            
+        solver.solve(action, minimizePriceGoal, tech.dfs());
+        log.info(" result order = " + orderVar);
+
         return getOrderBySolution(items, orderVar);
     }
     
