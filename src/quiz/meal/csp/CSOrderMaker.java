@@ -76,7 +76,8 @@ public class CSOrderMaker implements OrderMaker {
         		}
         	}
         	
-        	CspConstraint constraint = sum.geq(foodCount.get(item));
+        	CspConstraint constraint = sum.geq(foodCount.containsKey(item) ?  foodCount.get(item) : 0);
+        	//solver.addConstraint(constraint);
         }
         
 //        for(int i=0; i<items.length; i++) {
