@@ -1,0 +1,37 @@
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(¦Ü´Lº~³ù,16.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Food(¦Ü´Lº~³ù,16.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Food(¦Ü´Lº~³ù,16.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(¦Ü´Lº~³ù,16.80), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Meal(¦Ü´Lº~³ù®MÀ\,26.60)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Meal(¦Ü´Lº~³ù®MÀ\,26.60)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50), Food(¦Ü´Lº~³ù,16.80), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80), Meal(¦Ü´Lº~³ù®MÀ\,26.60)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80), Meal(¦Ü´Lº~³ù®MÀ\,26.60)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(¤¤Á¦±ø,8.80), Food(¦Ü´Lº~³ù,16.80), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Meal(¦Ü´Lº~³ù®MÀ\,26.60), Food(¤¤Á¦±ø,8.80), Food(Âù¼hªÛ¤hÉÓ³ù,12.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Meal(¦Ü´Lº~³ù®MÀ\,26.60), Food(¤¤Á¦±ø,8.80), Food(Âù¼hªÛ¤hÉÓ³ù,12.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T: testing [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(¤¤Á¦±ø,8.80), Food(¤¤¥i¼Ö,8.50)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    expects: [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80)]
+2009/4/22 ¤W¤È 01:04:01 quiz.meal.AbstractOrderMakerTest baseOrderTest
+¸ê°T:    result:  [Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Food(Âù¼hªÛ¤hÉÓ³ù,12.50), Meal(Âù¼hªÛ¤hÉÓ³ù®MÀ\,23.80)]
+

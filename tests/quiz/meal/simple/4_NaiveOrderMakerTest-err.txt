@@ -1,0 +1,25 @@
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊: testing [Food(至尊漢堡,16.80)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    expects: [Food(至尊漢堡,16.80)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    result:  [Food(至尊漢堡,16.80)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊: testing [Food(雙層芝士孖堡,12.50), Food(中薯條,8.80), Food(中可樂,8.50)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    expects: [Meal(雙層芝士孖堡套餐,23.80)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    result:  [Food(雙層芝士孖堡,12.50), Food(中薯條,8.80), Food(中可樂,8.50)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊: testing [Food(雙層芝士孖堡,12.50), Food(至尊漢堡,16.80), Food(中薯條,8.80), Food(中可樂,8.50)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    expects: [Food(雙層芝士孖堡,12.50), Meal(至尊漢堡套餐,26.60)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    result:  [Food(雙層芝士孖堡,12.50), Food(至尊漢堡,16.80), Food(中薯條,8.80), Food(中可樂,8.50)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊: testing [Food(雙層芝士孖堡,12.50), Food(中薯條,8.80), Food(中可樂,8.50), Food(至尊漢堡,16.80), Food(中薯條,8.80), Food(中可樂,8.50)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    expects: [Meal(雙層芝士孖堡套餐,23.80), Meal(至尊漢堡套餐,26.60)]
+2009/4/25 上午 09:10:33 quiz.meal.AbstractOrderMakerTest baseOrderTest
+資訊:    result:  [Food(雙層芝士孖堡,12.50), Food(中薯條,8.80), Food(中可樂,8.50), Food(至尊漢堡,16.80), Food(中薯條,8.80), Food(中可樂,8.50)]
+
