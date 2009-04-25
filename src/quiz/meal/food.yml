@@ -80,3 +80,8 @@
   name: 豬柳蛋漢堡套餐
   price: 23.5
   food: [*11, *o1, *d1]
+
+麥樂雞翼套餐: !quiz.meal.model.Meal
+  name: 麥樂雞翼套餐
+  price: 34.0
+  food: [*3, *5, *o1, *d1]
