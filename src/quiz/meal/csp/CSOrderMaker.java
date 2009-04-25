@@ -2,7 +2,6 @@ package quiz.meal.csp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,14 +27,20 @@ import quiz.meal.model.Food;
 import quiz.meal.model.Item;
 import quiz.meal.model.Meal;
 
+/**
+ * Use Integer Linear Programming method to find cheapest orders for specified order items.
+ * 
+ * @author siuying
+ * @see http://www.reality.hk/articles/2009/04/22/960/
+ */
 public class CSOrderMaker implements OrderMaker {
     private Logger log = Logger.getLogger(CSOrderMaker.class.getName());    
     private Menu menu;
-    private Item[] allItems;
+    private Item[] items;
 
     public CSOrderMaker() {
         menu = new SimpleMenu();
-        allItems = menu.getAllItems().values().toArray(new Item[0]);
+        items = menu.getAllItems().values().toArray(new Item[0]);
     }
 
     @Override
@@ -43,53 +48,45 @@ public class CSOrderMaker implements OrderMaker {
         CspSolver solver = CspSolver.createSolver();
         CspVariableFactory varFactory = solver.getVarFactory();
         solver.setAutoPropagate(true);
-
+        
         List<Food> wantedFood = OrderHelper.getItemAsFoodList(Arrays.asList(wantedItems));
         Map<Item, Integer> foodCount = OrderHelper.getItemCount(wantedFood);
-        Item[] items = getRelatedItems(wantedItems);
         
+        // create variable for order items
         List<CspIntVariable> orderVar = new ArrayList<CspIntVariable>();
         for (Item f : items) {
             CspIntVariable w = varFactory.intVar(f.getName(), 0, wantedFood.size());
             orderVar.add(w);
         }
         
+        // add constraints
         CspIntExpr priceExpr = null;
         try {
+            // ordered_food(X) + SUM(ordered_meal_with_food(X)) = wanted_food(x)
+            for (int i = 0; i < items.length; i++) {
+                Item item = items[i];
+                if (item instanceof Food) {
+                    createFoodConstraint(solver, foodCount, orderVar, orderVar.get(i), (Food) item);
+                }                
+            }
+            
+            // total price = sum ordered_food(X) * price(X)
+            // use integer because jOpt cannot work with float!
             for (int i = 0; i < items.length; i++) {
                 Item item = items[i];
                 CspIntVariable oX = orderVar.get(i);
 
-                if (item instanceof Food) {
-                    CspIntExpr sum = oX;
-                    for (int j = 0; j < items.length; j++) {
-                        if (items[j] instanceof Meal) {
-                            Meal m = (Meal) items[j];
-                            if (m.getFood().contains(item)) {
-                                sum = sum.add(orderVar.get(j));
-                            }
-                        }
-                    }
-                    
-                    // ordered_food(X) + SUM(ordered_meal_with_food(X)) = wanted_food(x)
-                    int itemCount = foodCount.containsKey(item) ? foodCount.get(item) : 0;
-                    CspConstraint foodConstraint = sum.eq(itemCount);
-                    solver.addConstraint(foodConstraint);
-                    
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("food(%s): %s", item.getName(), foodConstraint));
-                    }
+                int itemPrice = (int) item.getPrice() * 10;
+                if (priceExpr == null) {
+                    priceExpr = oX.multiply(itemPrice);
+                } else {
+                    priceExpr = priceExpr.add(oX.multiply(itemPrice));
                 }
-            
-                // total price = sum ordered_food(X) * price(X)
-                priceExpr = (priceExpr == null) ?
-                        oX.multiply((int)(item.getPrice()*10)) :
-                        priceExpr.add(oX.multiply((int)(item.getPrice()*10)));
-                
             }
 
         } catch (PropagationFailureException e) {
             log.error("error propagate constraint", e);
+
         }
         
         SearchTechniques tech = solver.getSearchTechniques();
@@ -104,6 +101,27 @@ public class CSOrderMaker implements OrderMaker {
         return getOrderBySolution(items, orderVar);
     }
     
+    private void createFoodConstraint(CspSolver solver, Map<Item, Integer> foodCount, 
+            List<CspIntVariable> orderVar, CspIntVariable oX, Food food) throws PropagationFailureException {
+        CspIntExpr sum = oX;
+        for (int j = 0; j < items.length; j++) {
+            if (items[j] instanceof Meal) {
+                Meal meal = (Meal) items[j];
+                if (meal.getFood().contains(food)) {
+                    sum = sum.add(orderVar.get(j));
+                }
+            }
+        }
+        
+        int itemCount = foodCount.containsKey(food) ? foodCount.get(food) : 0;
+        CspConstraint foodConstraint = sum.eq(itemCount);
+        solver.addConstraint(foodConstraint);
+        
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("food(%s): %s", food.getName(), foodConstraint));
+        }
+    }
+    
     private List<Item> getOrderBySolution(Item[] items, List<CspIntVariable> orderItemCount) {
         List<String> orderItemNames = new ArrayList<String>();
         for(int i=0; i<items.length; i++) {
@@ -115,34 +133,5 @@ public class CSOrderMaker implements OrderMaker {
             }
         }
         return menu.getItems(orderItemNames.toArray(new String[orderItemNames.size()]));
-    }
-    
-    /**
-     * Filter out items that are not related to the wanted food. "Related to" means the item is a wanted food, 
-     * or a meal containing wanted food. 
-     * 
-     * @param allItems all items
-     * @param wantedFood food wanted
-     * @return array of items that are only related to the wanted order
-     */
-    private Item[] getRelatedItems(Item[] wantedFood) {
-        ArrayList<Item> itemList = new ArrayList<Item>(Arrays.asList(allItems));
-        Iterator<Item> iter = itemList.iterator();
-        while(iter.hasNext()) {
-            Item item = iter.next();
-            boolean isWanted = false;
-            for(Item wanted : wantedFood) {
-                if (item.equals(wanted) || (item instanceof Meal && ((Meal)item).getFood().contains(wanted))) {
-                    // retain
-                    isWanted = true;
-                    break;
-                }
-            }
-            if (!isWanted) {
-                iter.remove();
-            }
-        }
-        
-        return itemList.toArray(new Item[itemList.size()]);
     }
 }
