@@ -31,6 +31,8 @@ public class TreeSearchOrderMaker implements OrderMaker {
     public TreeSearchOrderMaker(Menu menu) {
         this.menu = menu;
 
+        // Move all meal to an array for easy access later
+        // Primitive array Meal[] is used for speed.
         ArrayList<Meal> mealList = new ArrayList<Meal>();
         Map<String, Item> map = menu.getAllItems();
         Set<String> names = map.keySet();
@@ -53,7 +55,7 @@ public class TreeSearchOrderMaker implements OrderMaker {
     		foodToBuy.add((Food)item);
     	}
     	List<Food> foodRemain = new ArrayList<Food>(foodToBuy);
-		tryAllMeal(0, foodRemain, moneySaved);
+		tryAllMeal(0, foodRemain, moneySaved); //Base Case
 		
 		List<Item> mealAndFood = new ArrayList<Item>();
 		mealAndFood.addAll(mealToBuy);
@@ -67,6 +69,8 @@ public class TreeSearchOrderMaker implements OrderMaker {
      */
     public boolean tryAllMeal(int mealIndex, List<Food> foodRemain, double moneySaved) {
     	boolean makeNewCombo = false;
+    	// Controlling nCr times but not nPr times.
+    	// (i.e. i = mealIndex but not i = 0)
 		for (int i = mealIndex; i < meals.length; i++) {
 			makeNewCombo |= tryCombine(i, foodRemain, moneySaved);
 		}
@@ -95,16 +99,16 @@ public class TreeSearchOrderMaker implements OrderMaker {
 
     	if (canCombine) {
     		moneySaved = moneySaved + menu.getOrderPrice(new ArrayList<Item>(targetMeal.getFood())) - targetMeal.getPrice();
-    		tracker.push(meals[mealIndex]);
+    		tracker.push(meals[mealIndex]); // Tracing meal history
 			
-    		if (!tryAllMeal(mealIndex, newFoodRemain, moneySaved)) {
+    		if (!tryAllMeal(mealIndex, newFoodRemain, moneySaved)) { // Termination Condition
         		if (moneySaved > maxMoneySaved) {
         			maxMoneySaved = moneySaved;
         			mealToBuy = new ArrayList<Meal>(tracker);
         			foodToBuy = new ArrayList<Food>(newFoodRemain);
         		}
     		}
-    		tracker.pop();
+    		tracker.pop(); // Tracing meal history
     		return true;
     	} else {
     		return false;
