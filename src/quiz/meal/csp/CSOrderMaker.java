@@ -53,14 +53,13 @@ public class CSOrderMaker implements OrderMaker {
             CspIntVariable w = varFactory.intVar(f.getName(), 0, wantedFood.size());
             orderVar.add(w);
         }
-        int maxPrice = ((int) maxPrice(wantedFood) * 10);
-        CspIntVariable priceVar = varFactory.intVar("price", 0, maxPrice);
-        CspIntExpr priceExpr = priceVar;
-
+        
+        CspIntExpr priceExpr = null;
         try {
             for (int i = 0; i < items.length; i++) {
                 Item item = items[i];
                 CspIntVariable oX = orderVar.get(i);
+
                 if (item instanceof Food) {
                     CspIntExpr sum = oX;
                     for (int j = 0; j < items.length; j++) {
@@ -72,18 +71,23 @@ public class CSOrderMaker implements OrderMaker {
                         }
                     }
                     
-                    // ordered_food(X) + SUM(ordered_meal_with_food(X)) >= wanted_food(x)
+                    // ordered_food(X) + SUM(ordered_meal_with_food(X)) = wanted_food(x)
                     int itemCount = foodCount.containsKey(item) ? foodCount.get(item) : 0;
-                    CspConstraint foodConstraint = sum.geq(itemCount);
+                    CspConstraint foodConstraint = sum.eq(itemCount);
                     solver.addConstraint(foodConstraint);
+                    
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("food(%s): %s", item.getName(), foodConstraint));
+                    }
                 }
             
                 // total price = sum ordered_food(X) * price(X)
-                priceExpr = priceExpr.add(oX.multiply((int)(item.getPrice()*10)));
+                priceExpr = (priceExpr == null) ?
+                        oX.multiply((int)(item.getPrice()*10)) :
+                        priceExpr.add(oX.multiply((int)(item.getPrice()*10)));
+                
             }
-            log.debug("price = " + priceExpr.toString());
-            
-            solver.propagate();
+
         } catch (PropagationFailureException e) {
             log.error("error propagate constraint", e);
         }
@@ -98,14 +102,6 @@ public class CSOrderMaker implements OrderMaker {
         log.info(" result order = " + orderVar);
 
         return getOrderBySolution(items, orderVar);
-    }
-    
-    private double maxPrice(List<Food> wantedFood) {
-        double price = 0.0;
-        for(Food f : wantedFood) {
-            price += f.getPrice();
-        }
-        return price;
     }
     
     private List<Item> getOrderBySolution(Item[] items, List<CspIntVariable> orderItemCount) {

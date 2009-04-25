@@ -32,6 +32,11 @@ public abstract class AbstractOrderMakerTest {
         List<Item> wantedItems = getSimpleMenu().getItems("至尊漢堡");        
         List<Item> expectedItems = getSimpleMenu().getItems("至尊漢堡");
         baseOrderTest(wantedItems, expectedItems);
+        
+        List<Item> wantedItems2 = getSimpleMenu().getItems("中薯條");        
+        List<Item> expectedItems2 = getSimpleMenu().getItems("中薯條");
+        baseOrderTest(wantedItems2, expectedItems2);       
+        
     }
     
     @Test
