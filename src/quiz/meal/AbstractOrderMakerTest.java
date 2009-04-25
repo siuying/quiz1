@@ -47,7 +47,14 @@ public abstract class AbstractOrderMakerTest {
         List<Item> expectedItems = getSimpleMenu().getItems("雙層芝士孖堡", "至尊漢堡套餐");
         baseOrderTest(wantedItems, expectedItems);
     }
-    
+
+    @Test
+    public void testChickenMeal() {
+        List<Item> wantedItems = getSimpleMenu().getItems("脆香雞翼 (4件)", "麥樂雞 (6件)", "中薯條", "中可樂", "中薯條", "中可樂");
+        List<Item> expectedItems = getSimpleMenu().getItems("麥樂雞 (6件) 套餐", "脆香雞翼套餐");
+        baseOrderTest(wantedItems, expectedItems);
+    }
+   
     @Test
     @SuppressWarnings("unchecked")
     public void testOrders() {
